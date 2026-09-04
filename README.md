@@ -48,8 +48,10 @@ HoofHotel/
 | GET | `/api/health` | Статус API |
 | GET | `/api/hotels` | Список (`?city=Київ`) |
 | GET | `/api/hotels/{id}` | Детали отеля |
+| POST | `/api/auth/register` | Регистрация (email, password, displayName) |
+| POST | `/api/auth/login` | Вход (email, password) → JWT |
 
-Планируется: `/api/auth/register`, `/api/auth/login`, `/api/bookings`.
+Планируется: `/api/bookings`.
 
 ### Запуск
 ```powershell
