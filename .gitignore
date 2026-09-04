@@ -1,5 +1,26 @@
-﻿node_modules/
+﻿# Dependencies
+node_modules/
+bin/
+obj/
+.expo/
+dist/
+web-build/
+
+# Secrets / local
 .env
 .env.*
-dist/
+*.user
+appsettings.*.local.json
+appsettings.Development.json
+
+# OS / IDE
 .DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Build
+*.apk
+*.aab
+*.log
