@@ -50,8 +50,9 @@ HoofHotel/
 | GET | `/api/hotels/{id}` | Детали отеля |
 | POST | `/api/auth/register` | Регистрация (email, password, displayName) |
 | POST | `/api/auth/login` | Вход (email, password) → JWT |
-
-Планируется: `/api/bookings`.
+| POST | `/api/bookings` | Создать бронь (нужен JWT) |
+| GET | `/api/bookings/mine` | Мои брони (нужен JWT) |
+| POST | `/api/bookings/{id}/cancel` | Отменить бронь (нужен JWT) |
 
 ### Запуск
 ```powershell
