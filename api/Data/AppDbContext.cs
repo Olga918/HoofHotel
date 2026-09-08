@@ -25,6 +25,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.Country).HasMaxLength(100);
             e.Property(x => x.PricePerNight).HasPrecision(10, 2);
             e.Property(x => x.Address).HasMaxLength(250);
+            e.Property(x => x.Amenities).HasMaxLength(500);
+            e.Property(x => x.GalleryJson).HasMaxLength(2000);
+            e.Property(x => x.ReviewQuote).HasMaxLength(500);
+            e.Property(x => x.ReviewAuthor).HasMaxLength(120);
         });
 
         modelBuilder.Entity<Booking>(e =>

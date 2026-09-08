@@ -49,6 +49,44 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+
+    // Нові колонки для вже існуючої БД (PostgreSQL)
+    db.Database.ExecuteSqlRaw(
+        """
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "MaxGuests" integer NOT NULL DEFAULT 2;
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "Amenities" character varying(500) NOT NULL DEFAULT '';
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "GalleryJson" character varying(2000) NOT NULL DEFAULT '[]';
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "ReviewCount" integer NOT NULL DEFAULT 0;
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "ReviewQuote" character varying(500) NULL;
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "ReviewAuthor" character varying(120) NULL;
+        """);
+
+    foreach (var item in HotelSeed.Items)
+    {
+        var row = db.Hotels.Find(item.Id);
+        if (row is null)
+        {
+            db.Hotels.Add(item);
+            continue;
+        }
+
+        row.Name = item.Name;
+        row.City = item.City;
+        row.Country = item.Country;
+        row.Description = item.Description;
+        row.PricePerNight = item.PricePerNight;
+        row.Rating = item.Rating;
+        row.Address = item.Address;
+        row.ImageUrl = item.ImageUrl;
+        row.MaxGuests = item.MaxGuests;
+        row.Amenities = item.Amenities;
+        row.GalleryJson = item.GalleryJson;
+        row.ReviewCount = item.ReviewCount;
+        row.ReviewQuote = item.ReviewQuote;
+        row.ReviewAuthor = item.ReviewAuthor;
+    }
+
+    db.SaveChanges();
 }
 
 if (app.Environment.IsDevelopment())
@@ -57,6 +95,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("ExpoDev");
+app.UseStaticFiles();
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();

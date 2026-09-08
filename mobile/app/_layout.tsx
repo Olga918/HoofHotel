@@ -6,6 +6,8 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider } from '@/context/AuthContext';
+import { SearchProvider } from '@/context/SearchContext';
+import { FavoritesProvider } from '@/context/FavoritesContext';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -36,7 +38,11 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <SearchProvider>
+        <FavoritesProvider>
+          <RootLayoutNav />
+        </FavoritesProvider>
+      </SearchProvider>
     </AuthProvider>
   );
 }
@@ -48,6 +54,7 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="hotel/[id]" options={{ title: 'Готель' }} />
       </Stack>
     </ThemeProvider>
   );

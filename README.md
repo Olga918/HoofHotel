@@ -10,7 +10,7 @@
 | Мобилка | Expo (React Native) → `mobile/` |
 | Backend | ASP.NET Web API → `api/` |
 | БД | PostgreSQL + EF Core (Npgsql) |
-| Дизайн | Figma |
+| Дизайн | [Figma — КурсоваяРаботаBooking](https://www.figma.com/design/J8PKhAAB3dO8eIDNOnRmmr/%D0%9A%D1%83%D1%80%D1%81%D0%BE%D0%B2%D0%B0%D1%8F%D0%A0%D0%B0%D0%B1%D0%BE%D1%82%D0%B0Booking--Copy-?node-id=0-1&p=f) |
 | Задачи | [Trello LameHorse](https://trello.com/invite/b/6a91c24cb97e300fd1ad6033/ATTI7f82e6a4371a511b7131f39759b6dd85E50513C8/lamehorse) |
 | Код | https://github.com/Olga918/HoofHotel |
 
@@ -27,7 +27,7 @@
 
 Без оплаты, карт, чата и отдельной админки на первом этапе.
 
-Тема: лёгкий юмор в названиях отелей; логика бронирования обычная.
+Тема: **лошадиный юмор** — названия, описания, фото (пони на рецепции / «на кровати» в текстах). Логика бронирования обычная. Из Figma («Hotel for you») берём структуру экранов, не серьёзный тон 1:1.
 
 ## Структура
 ```

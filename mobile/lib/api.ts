@@ -75,3 +75,120 @@ export async function loginUser(input: {
     displayName: data.displayName,
   };
 }
+
+export type Hotel = {
+  id: number;
+  name: string;
+  city: string;
+  country: string;
+  description: string;
+  pricePerNight: number;
+  rating: number;
+  imageUrl: string | null;
+  address: string;
+  maxGuests?: number;
+};
+
+export type HotelDetail = Hotel & {
+  amenities: string[];
+  gallery: string[];
+  reviewCount: number;
+  reviewQuote: string | null;
+  reviewAuthor: string | null;
+};
+
+/** Absolute URL for hotel images (API wwwroot or external). */
+export function resolveHotelImageUrl(imageUrl: string | null | undefined): string | null {
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl;
+  const path = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  return `${API_BASE_URL}${path}`;
+}
+
+/** GET /api/hotels — optional ?city= */
+export async function fetchHotels(city?: string): Promise<Hotel[]> {
+  const q = city?.trim() ? `?city=${encodeURIComponent(city.trim())}` : '';
+  const res = await fetch(`${API_BASE_URL}/api/hotels${q}`);
+  if (!res.ok) throw new Error(await readError(res));
+  const list = (await res.json()) as Hotel[];
+  return list.map((h) => ({
+    ...h,
+    imageUrl: resolveHotelImageUrl(h.imageUrl),
+  }));
+}
+
+/** GET /api/hotels/{id} */
+export async function fetchHotelById(id: number): Promise<HotelDetail> {
+  const res = await fetch(`${API_BASE_URL}/api/hotels/${id}`);
+  if (!res.ok) throw new Error(await readError(res));
+  const h = (await res.json()) as HotelDetail;
+  return {
+    ...h,
+    imageUrl: resolveHotelImageUrl(h.imageUrl),
+    gallery: (h.gallery ?? []).map((u) => resolveHotelImageUrl(u) ?? u),
+  };
+}
+
+export type Booking = {
+  id: number;
+  hotelId: number;
+  hotelName: string;
+  city: string;
+  country: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  totalPrice: number;
+  status: string;
+  createdAt: string;
+};
+
+function authHeaders(token: string): HeadersInit {
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+/** yyyy-MM-dd у локальному часі */
+export function toDateOnly(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export async function createBooking(
+  token: string,
+  input: { hotelId: number; checkIn: Date; checkOut: Date; guests: number }
+): Promise<Booking> {
+  const res = await fetch(`${API_BASE_URL}/api/bookings`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: JSON.stringify({
+      hotelId: input.hotelId,
+      checkIn: toDateOnly(input.checkIn),
+      checkOut: toDateOnly(input.checkOut),
+      guests: input.guests,
+    }),
+  });
+  if (!res.ok) throw new Error(await readError(res));
+  return (await res.json()) as Booking;
+}
+
+export async function fetchMyBookings(token: string): Promise<Booking[]> {
+  const res = await fetch(`${API_BASE_URL}/api/bookings/mine`, {
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw new Error(await readError(res));
+  return (await res.json()) as Booking[];
+}
+
+export async function cancelBooking(token: string, id: number): Promise<Booking> {
+  const res = await fetch(`${API_BASE_URL}/api/bookings/${id}/cancel`, {
+    method: 'POST',
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw new Error(await readError(res));
+  return (await res.json()) as Booking;
+}

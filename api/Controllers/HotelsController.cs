@@ -1,3 +1,4 @@
+using System.Text.Json;
 using HoofHotel.Api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,43 +24,80 @@ public class HotelsController(AppDbContext db) : ControllerBase
         var hotels = await query
             .OrderBy(h => h.City)
             .ThenBy(h => h.Name)
-            .Select(h => new
-            {
-                h.Id,
-                h.Name,
-                h.City,
-                h.Country,
-                h.Description,
-                h.PricePerNight,
-                h.Rating,
-                h.ImageUrl,
-                h.Address
-            })
             .ToListAsync(ct);
 
-        return Ok(hotels);
+        return Ok(hotels.Select(MapListItem));
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id, CancellationToken ct)
     {
         var hotel = await db.Hotels.AsNoTracking()
-            .Where(h => h.Id == id)
-            .Select(h => new
-            {
-                h.Id,
-                h.Name,
-                h.City,
-                h.Country,
-                h.Description,
-                h.PricePerNight,
-                h.Rating,
-                h.ImageUrl,
-                h.Address
-            })
-            .FirstOrDefaultAsync(ct);
+            .FirstOrDefaultAsync(h => h.Id == id, ct);
 
         if (hotel is null) return NotFound(new { message = "Готель не знайдено" });
-        return Ok(hotel);
+        return Ok(MapDetail(hotel));
+    }
+
+    private object MapListItem(Models.Hotel h) => new
+    {
+        h.Id,
+        h.Name,
+        h.City,
+        h.Country,
+        h.Description,
+        h.PricePerNight,
+        h.Rating,
+        ImageUrl = Abs(h.ImageUrl),
+        h.Address,
+        h.MaxGuests
+    };
+
+    private object MapDetail(Models.Hotel h)
+    {
+        var gallery = ParseGallery(h.GalleryJson);
+        if (gallery.Count == 0 && !string.IsNullOrEmpty(h.ImageUrl))
+            gallery.Add(h.ImageUrl);
+
+        return new
+        {
+            h.Id,
+            h.Name,
+            h.City,
+            h.Country,
+            h.Description,
+            h.PricePerNight,
+            h.Rating,
+            ImageUrl = Abs(h.ImageUrl),
+            h.Address,
+            h.MaxGuests,
+            Amenities = h.Amenities
+                .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+            Gallery = gallery.Select(Abs).ToArray(),
+            h.ReviewCount,
+            h.ReviewQuote,
+            h.ReviewAuthor
+        };
+    }
+
+    private static List<string> ParseGallery(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return [];
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(json) ?? [];
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private string Abs(string? url)
+    {
+        if (string.IsNullOrEmpty(url)) return string.Empty;
+        if (url.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return url;
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        return baseUrl + (url.StartsWith('/') ? url : "/" + url);
     }
 }

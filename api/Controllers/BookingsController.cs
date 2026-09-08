@@ -36,8 +36,12 @@ public class BookingsController(AppDbContext db) : ControllerBase
         if (hotel is null)
             return NotFound(new { message = "Готель не знайдено" });
 
+        if (request.Guests > hotel.MaxGuests)
+            return BadRequest(new { message = $"У цьому номері максимум {hotel.MaxGuests} гостей" });
+
         var nights = request.CheckOut.DayNumber - request.CheckIn.DayNumber;
-        var total = hotel.PricePerNight * nights;
+        // Ціна = за ніч × люди × ночі (як на головному екрані)
+        var total = hotel.PricePerNight * nights * request.Guests;
 
         var booking = new Booking
         {

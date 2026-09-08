@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
+  Text as RNText,
   TextInput,
   View,
 } from 'react-native';
+import { SymbolView } from 'expo-symbols';
 import { Text } from '@/components/Themed';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/lib/api';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -28,6 +30,7 @@ export default function ProfileScreen() {
   const [displayName, setDisplayName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async () => {
     setError(null);
@@ -61,9 +64,6 @@ export default function ProfileScreen() {
           Вітаємо, {user.displayName}!
         </Text>
         <Text style={[styles.meta, { color: colors.tabIconDefault }]}>{user.email}</Text>
-        <Text style={[styles.apiHint, { color: colors.tabIconDefault }]}>
-          API: {API_BASE_URL}
-        </Text>
         <Pressable
           style={[styles.btn, styles.btnOutline, { borderColor: colors.tint }]}
           onPress={async () => {
@@ -73,6 +73,7 @@ export default function ProfileScreen() {
             setDisplayName('');
             setError(null);
             setMode('login');
+            setShowPassword(false);
           }}
         >
           <Text style={[styles.btnOutlineText, { color: colors.tint }]}>Вийти</Text>
@@ -87,11 +88,24 @@ export default function ProfileScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.pad} keyboardShouldPersistTaps="handled">
+        <View style={styles.hero}>
+          <Image
+            source={require('../../assets/hotels/hotel-pony-reception.png')}
+            style={styles.heroImage}
+            resizeMode="cover"
+          />
+          <View style={styles.heroOverlay}>
+            <RNText style={styles.brand}>HoofHotel</RNText>
+            <RNText style={styles.heroSlogan}>Найди ночлег. Без лишней скачки.</RNText>
+          </View>
+        </View>
+
+        <RNText style={[styles.sloganUnder, { color: colors.tint }]}>
+          Найди ночлег. Без лишней скачки.
+        </RNText>
+
         <Text style={[styles.title, { color: colors.text }]}>
           {mode === 'login' ? 'Вхід' : 'Реєстрація'}
-        </Text>
-        <Text style={[styles.slogan, { color: colors.tabIconDefault }]}>
-          Найди ночлег. Без лишней скачки.
         </Text>
 
         <View style={styles.switchRow}>
@@ -146,17 +160,39 @@ export default function ProfileScreen() {
           keyboardType="email-address"
           autoCorrect={false}
         />
-        <TextInput
+        <View
           style={[
-            styles.input,
-            { borderColor: colors.tabIconDefault, color: colors.text, backgroundColor: '#fff' },
+            styles.passwordRow,
+            { borderColor: colors.tabIconDefault, backgroundColor: '#fff' },
           ]}
-          placeholder="Пароль (мін. 6 символів)"
-          placeholderTextColor={colors.tabIconDefault}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+        >
+          <TextInput
+            style={[styles.passwordInput, { color: colors.text }]}
+            placeholder="Пароль (мін. 6 символів)"
+            placeholderTextColor={colors.tabIconDefault}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Pressable
+            onPress={() => setShowPassword((v) => !v)}
+            hitSlop={10}
+            style={styles.showBtn}
+            accessibilityLabel={showPassword ? 'Сховати пароль' : 'Показати пароль'}
+          >
+            <SymbolView
+              name={{
+                ios: showPassword ? 'eye.slash' : 'eye',
+                android: showPassword ? 'visibility_off' : 'visibility',
+                web: showPassword ? 'visibility_off' : 'visibility',
+              }}
+              tintColor={colors.tint}
+              size={22}
+            />
+          </Pressable>
+        </View>
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -173,13 +209,6 @@ export default function ProfileScreen() {
             </Text>
           )}
         </Pressable>
-
-        <Text style={[styles.apiHint, { color: colors.tabIconDefault }]}>
-          API: {API_BASE_URL}
-        </Text>
-        <Text style={[styles.hint, { color: colors.tabIconDefault }]}>
-          Спочатку запусти backend: dotnet run у папці api. Телефон і ПК — в одній Wi‑Fi.
-        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -188,8 +217,46 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   pad: { padding: 24, paddingBottom: 40, flexGrow: 1 },
-  title: { fontSize: 26, fontWeight: '800', marginBottom: 8 },
-  slogan: { fontSize: 15, marginBottom: 18 },
+  hero: {
+    height: 170,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 10,
+    backgroundColor: '#3d2b1f',
+  },
+  heroImage: { width: '100%', height: '100%' },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(43, 29, 20, 0.55)',
+    justifyContent: 'flex-end',
+    padding: 16,
+    zIndex: 2,
+  },
+  brand: {
+    color: '#ffffff',
+    fontSize: 30,
+    fontWeight: '800',
+    marginBottom: 6,
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  heroSlogan: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 22,
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  sloganUnder: {
+    fontSize: 15,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  title: { fontSize: 22, fontWeight: '800', marginBottom: 12 },
   hello: { fontSize: 18, fontWeight: '700', marginBottom: 6, textAlign: 'center' },
   meta: { fontSize: 15, marginBottom: 8 },
   switchRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
@@ -209,6 +276,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 12,
   },
+  passwordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 12,
+    paddingRight: 8,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+  },
+  showBtn: { paddingHorizontal: 10, paddingVertical: 8 },
   btn: {
     borderRadius: 10,
     paddingVertical: 14,
@@ -224,6 +306,4 @@ const styles = StyleSheet.create({
   },
   btnOutlineText: { fontWeight: '700', fontSize: 16 },
   error: { color: '#c0392b', marginBottom: 8, lineHeight: 20 },
-  apiHint: { marginTop: 16, fontSize: 12 },
-  hint: { marginTop: 8, fontSize: 13, lineHeight: 18 },
 });
