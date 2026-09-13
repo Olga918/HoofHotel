@@ -5,10 +5,12 @@ import {
   Dimensions,
   FlatList,
   Image,
+  Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text as RNText,
   View,
@@ -20,7 +22,7 @@ import { hotelGallerySources, hotelImageSource } from '@/lib/hotelImages';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useAuth } from '@/context/AuthContext';
-import { estimateStayPrice, formatUaDate, useSearch } from '@/context/SearchContext';
+import { estimateStayPrice, formatGuestsLabel, formatUaDate, useSearch } from '@/context/SearchContext';
 import { useFavorites } from '@/context/FavoritesContext';
 
 const { width: SCREEN_W } = Dimensions.get('window');
@@ -159,10 +161,72 @@ export default function HotelDetailScreen() {
             {hotel.city}, {hotel.country}
           </Text>
 
+          <View style={styles.actionRow}>
+            <Pressable
+              style={[styles.actionBtn, { borderColor: colors.tint }]}
+              onPress={async () => {
+                const label = `${hotel.name}, ${hotel.address}, ${hotel.city}`;
+                const lat = hotel.latitude;
+                const lng = hotel.longitude;
+                const url =
+                  lat && lng && Math.abs(lat) > 0.01
+                    ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(label)}`;
+                try {
+                  await Linking.openURL(url);
+                } catch {
+                  Alert.alert('Карта', 'Не вдалося відкрити Google Maps');
+                }
+              }}
+            >
+              <RNText style={[styles.actionBtnText, { color: colors.tint }]}>🗺 На карті</RNText>
+            </Pressable>
+            <Pressable
+              style={[styles.actionBtn, { borderColor: colors.tint }]}
+              onPress={async () => {
+                const mapsLink =
+                  hotel.latitude && hotel.longitude && Math.abs(hotel.latitude) > 0.01
+                    ? `https://www.google.com/maps/search/?api=1&query=${hotel.latitude},${hotel.longitude}`
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        `${hotel.address}, ${hotel.city}`
+                      )}`;
+                const message = [
+                  `🐴 ${hotel.name}`,
+                  `${hotel.address}`,
+                  `${hotel.city}, ${hotel.country}`,
+                  `★ ${hotel.rating.toFixed(1)} · від ${Math.round(hotel.pricePerNight)} грн/ніч`,
+                  hotel.roomType ? `Номер: ${hotel.roomType}` : null,
+                  hotel.roomSizeM2 ? `Площа: ${hotel.roomSizeM2} м²` : null,
+                  `Дати: ${formatUaDate(search.checkIn)} → ${formatUaDate(search.checkOut)}`,
+                  formatGuestsLabel(search.adults, search.children),
+                  '',
+                  'Локація:',
+                  mapsLink,
+                  '',
+                  'HoofHotel — Найди ночлег. Без лишней скачки.',
+                ]
+                  .filter(Boolean)
+                  .join('\n');
+                try {
+                  await Share.share({ message, title: hotel.name });
+                } catch {
+                  Alert.alert('Поділитися', 'Не вдалося відкрити меню поширення');
+                }
+              }}
+            >
+              <RNText style={[styles.actionBtnText, { color: colors.tint }]}>↗ Поділитися</RNText>
+            </Pressable>
+          </View>
+
           <View style={[styles.chipRow]}>
             <View style={[styles.infoChip, { backgroundColor: '#e8ddd2' }]}>
               <RNText style={styles.infoChipText}>👥 до {hotel.maxGuests ?? 2} гостей</RNText>
             </View>
+            {hotel.roomSizeM2 ? (
+              <View style={[styles.infoChip, { backgroundColor: '#e8ddd2' }]}>
+                <RNText style={styles.infoChipText}>📐 {hotel.roomSizeM2} м²</RNText>
+              </View>
+            ) : null}
             <View style={[styles.infoChip, { backgroundColor: '#e8ddd2' }]}>
               <RNText style={styles.infoChipText}>
                 💰 {Math.round(hotel.pricePerNight)} грн / ніч / особа
@@ -170,10 +234,55 @@ export default function HotelDetailScreen() {
             </View>
           </View>
 
+          <Text style={[styles.section, { color: colors.text }]}>Про номер</Text>
+          <View style={[styles.roomCard, { borderColor: colors.tabIconDefault }]}>
+            <RNText style={[styles.roomType, { color: colors.text }]}>
+              {hotel.roomType ?? 'Номер'}
+            </RNText>
+            <View style={styles.roomGrid}>
+              <View style={styles.roomCell}>
+                <RNText style={styles.roomLabel}>Площа</RNText>
+                <RNText style={[styles.roomValue, { color: colors.text }]}>
+                  {hotel.roomSizeM2 ? `${hotel.roomSizeM2} м²` : '18 м²'}
+                </RNText>
+              </View>
+              <View style={styles.roomCell}>
+                <RNText style={styles.roomLabel}>Гості</RNText>
+                <RNText style={[styles.roomValue, { color: colors.text }]}>
+                  до {hotel.maxGuests ?? 2}
+                </RNText>
+              </View>
+              <View style={styles.roomCell}>
+                <RNText style={styles.roomLabel}>Поверх</RNText>
+                <RNText style={[styles.roomValue, { color: colors.text }]}>
+                  {hotel.floor && hotel.floor > 0 ? String(hotel.floor) : '1'}
+                </RNText>
+              </View>
+              <View style={styles.roomCellWide}>
+                <RNText style={styles.roomLabel}>Ліжка</RNText>
+                <RNText style={[styles.roomValue, { color: colors.text }]}>
+                  {hotel.beds?.trim() || '1 двоспальне ліжко'}
+                </RNText>
+              </View>
+              <View style={styles.roomCellWide}>
+                <RNText style={styles.roomLabel}>Вид</RNText>
+                <RNText style={[styles.roomValue, { color: colors.text }]}>
+                  {hotel.roomView?.trim() || 'Вид на двір'}
+                </RNText>
+              </View>
+              <View style={styles.roomCellWide}>
+                <RNText style={styles.roomLabel}>Санвузол</RNText>
+                <RNText style={[styles.roomValue, { color: colors.text }]}>
+                  {hotel.bathroom?.trim() || 'Приватна ванна кімната'}
+                </RNText>
+              </View>
+            </View>
+          </View>
+
           <View style={[styles.reviewCard, { borderColor: colors.tabIconDefault, marginTop: 14 }]}>
             <Text style={[styles.meta, { color: colors.tabIconDefault }]}>
-              {formatUaDate(search.checkIn)} → {formatUaDate(search.checkOut)} · {search.guests}{' '}
-              ос. · {search.nights}{' '}
+              {formatUaDate(search.checkIn)} → {formatUaDate(search.checkOut)} ·{' '}
+              {formatGuestsLabel(search.adults, search.children)} · {search.nights}{' '}
               {search.nights === 1 ? 'ніч' : 'ночей'}
             </Text>
             <Text style={[styles.title, { color: colors.tint, fontSize: 20, marginTop: 6 }]}>
@@ -289,6 +398,16 @@ const styles = StyleSheet.create({
   section: { fontSize: 18, fontWeight: '800', marginTop: 18, marginBottom: 8 },
   body: { fontSize: 15, lineHeight: 22 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
+  actionRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  actionBtn: {
+    flex: 1,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  actionBtnText: { fontWeight: '800', fontSize: 13 },
   infoChip: { borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8 },
   infoChipText: { fontWeight: '700', color: '#2b1d14', fontSize: 13 },
   amenities: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
@@ -304,6 +423,18 @@ const styles = StyleSheet.create({
     padding: 14,
     backgroundColor: '#fff',
   },
+  roomCard: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 14,
+    backgroundColor: '#fff',
+  },
+  roomType: { fontSize: 16, fontWeight: '800', marginBottom: 10 },
+  roomGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  roomCell: { width: '30%', minWidth: 90 },
+  roomCellWide: { width: '100%' },
+  roomLabel: { fontSize: 11, fontWeight: '700', color: '#a89080', marginBottom: 2 },
+  roomValue: { fontSize: 14, fontWeight: '600', lineHeight: 20 },
   bookBtn: {
     marginTop: 22,
     borderRadius: 12,

@@ -3,7 +3,7 @@ using HoofHotel.Api.Models;
 namespace HoofHotel.Api.Data;
 
 /// <summary>
-/// Seed: у каждого отеля свой уникальный набор фото (без пересечений).
+/// Seed: у каждого отеля свой уникальный набор фото, номер и координаты.
 /// </summary>
 public static class HotelSeed
 {
@@ -15,15 +15,19 @@ public static class HotelSeed
             "Wi‑Fi|Ресепшн 24/7|Сейф для сідел|Сніданок",
             "hotel-pony-reception.png",
             ["hotel-pony-reception.png", "h1-keys.png", "h1-suite.png"],
-            128, "Поні на рецепції видав ключі швидше за будь-якого адміністратора!", "Оля з Києва"),
+            128, "Поні на рецепції видав ключі швидше за будь-якого адміністратора!", "Оля з Києва",
+            "Стандартний номер", 22, "1 двоспальне ліжко + розкладачка", "Вид на Хрещатик", 3, "Приватна ванна з душем",
+            50.4501, 30.5234),
 
         H(2, "Pony Plaza", "Львів", "Україна",
             "У галереї номерів — поні, що «тестує» м’якість матраца.",
-            1450, 4.4, "пл. Ринок 3", 2,
+            1450, 4.4, "пл. Ринок 3", 4,
             "Wi‑Fi|Центр міста|М’які подушки|Кава",
             "hotel-pony-bed.png",
             ["hotel-pony-bed.png", "h2-bounce.png", "h2-coffee.png"],
-            86, "Матрац перевірений копитами. Спимо як ніколи.", "Марко, Львів"),
+            86, "Матрац перевірений копитами. Спимо як ніколи.", "Марко, Львів",
+            "Сімейний номер", 28, "1 двоспальне + 2 односпальні", "Вид на площу Ринок", 2, "Приватний душ",
+            49.8419, 24.0315),
 
         H(3, "Neigh Neighbourhood", "Одеса", "Україна",
             "Сусіди дружні. Іржати до 22:00. Кінь біля ресепшн чекає ключі від люксу.",
@@ -31,15 +35,19 @@ public static class HotelSeed
             "Wi‑Fi|Море поруч|Сніданок|Сімейні номери",
             "hotel-horse-seaside.png",
             ["hotel-horse-seaside.png", "h3-beach.png", "h3-rooftop.png"],
-            201, "Іржали до 21:59 — ідеально. Персонал з гумором.", "Катя, Одеса"),
+            201, "Іржали до 21:59 — ідеально. Персонал з гумором.", "Катя, Одеса",
+            "Сімейний номер", 32, "1 двоспальне + 2 односпальні", "Вид на море", 5, "Приватна ванна + балкон",
+            46.4845, 30.7326),
 
         H(4, "Horseshoe Suites", "Харків", "Україна",
             "Удача на кожному поверсі. У люксі інколи знаходять плюшеве копито на подушці.",
-            1380, 4.2, "Сумська 45", 2,
+            1380, 4.2, "Сумська 45", 3,
             "Wi‑Fi|Люкс|Ванна|Парковка",
             "hotel-pony-suite-door.png",
             ["hotel-pony-suite-door.png", "h4-lucky.png", "h4-bath.png"],
-            64, "Знайшли копито на подушці — залишили на щастя.", "Ігор"),
+            64, "Знайшли копито на подушці — залишили на щастя.", "Ігор",
+            "Люкс", 28, "1 двоспальне ліжко king-size + крісло-ліжко", "Вид на місто", 7, "Ванна з джакузі",
+            49.9935, 36.2304),
 
         H(5, "Mane Attraction", "Дніпро", "Україна",
             "Головна атракція — грива у ванній. На фото кінь ніби обирає халат.",
@@ -47,15 +55,19 @@ public static class HotelSeed
             "Wi‑Fi|Спа-зона|Халати|Вид на річку",
             "hotel-horse-bathrobe.png",
             ["hotel-horse-bathrobe.png", "h5-spa.png", "h5-river.png"],
-            97, "Халат XXL навіть для гриви. 10/10.", "Настя"),
+            97, "Халат XXL навіть для гриви. 10/10.", "Настя",
+            "Номер Делюкс", 26, "1 двоспальне ліжко", "Вид на річку", 4, "Приватна ванна + халати",
+            48.4647, 35.0462),
 
         H(6, "Saddle & Stay", "Warszawa", "Polska",
             "Здав сідло на ресепшн — відпочивай. Багаж носить стажер-поні.",
-            2100, 4.7, "Nowy Świat 22", 2,
+            2100, 4.7, "Nowy Świat 22", 4,
             "Wi‑Fi|Багаж|Сніданок|Центр",
             "hotel-pony-bellhop.png",
             ["hotel-pony-bellhop.png", "h6-luggage.png", "h6-saddle.png"],
-            155, "Поні-носій не загубив жодної сумки.", "Piotr"),
+            155, "Поні-носій не загубив жодної сумки.", "Piotr",
+            "Сімейний номер", 26, "1 двоспальне + 2 односпальні", "Вид на Nowy Świat", 2, "Приватний душ",
+            52.2319, 21.0180),
 
         H(7, "Gallop Guest House", "Kraków", "Polska",
             "До центру — легкий галоп. У дворі кінь ніби чекає таксі.",
@@ -63,23 +75,29 @@ public static class HotelSeed
             "Wi‑Fi|Старий город|Сніданок|Екскурсії",
             "hotel-horse-oldtown.png",
             ["hotel-horse-oldtown.png", "h7-taxi.png", "h7-map.png"],
-            112, "До Вавеля — справді легкий галоп.", "Anna"),
+            112, "До Вавеля — справді легкий галоп.", "Anna",
+            "Номер у старому місті", 24, "1 двоспальне + 1 односпальне", "Вид на вуличку", 1, "Приватна ванна",
+            50.0620, 19.9400),
 
         H(8, "Hayday Hotel", "Berlin", "Deutschland",
             "Сніданок включено: свіже сіно на сніданок і м’яка солома на ночліг.",
-            2350, 4.4, "Unter den Linden 5", 2,
+            2350, 4.4, "Unter den Linden 5", 4,
             "Сніданок включено|Wi‑Fi|Міні-бар|Солома premium",
             "hotel-horse-breakfast.png",
             ["hotel-horse-breakfast.png", "h8-buffet.png", "h8-straw.png"],
-            240, "Кінь за столом снідав разом із нами. Незрівнянно!", "Lena, Berlin"),
+            240, "Кінь за столом снідав разом із нами. Незрівнянно!", "Lena, Berlin",
+            "Сімейний бізнес-номер", 28, "1 двоспальне + дитяче ліжко", "Вид на Unter den Linden", 6, "Приватний душ + міні-бар",
+            52.5163, 13.3889),
 
         H(9, "Cobblestone Lodge", "Praha", "Česko",
             "Комфорт усередині. На ліжку інколи дрімає поні-інспектор чистоти.",
-            2200, 4.6, "Karlova 7", 2,
+            2200, 4.6, "Karlova 7", 4,
             "Wi‑Fi|Історичний центр|Тихі номери|Сніданок",
             "hotel-pony-inspector.png",
             ["hotel-pony-inspector.png", "h9-sheets.png", "h9-nap.png"],
-            178, "Інспектор-поні схвалив чистоту копитом.", "Tomáš"),
+            178, "Інспектор-поні схвалив чистоту копитом.", "Tomáš",
+            "Сімейний тихий номер", 24, "1 двоспальне + 1 односпальне", "Вид на дворик", 3, "Приватна ванна",
+            50.0865, 14.4167),
 
         H(10, "Quiet Hoof Hostel", "Wien", "Österreich",
             "Тихіше води, нижче копита. Quiet hours — навіть коні шепотом.",
@@ -87,7 +105,9 @@ public static class HotelSeed
             "Wi‑Fi|Хостел|Кухня|Тиха година",
             "hotel-pony-quiet.png",
             ["hotel-pony-quiet.png", "h10-bunk.png", "h10-kitchen.png"],
-            53, "Справді тихо. Коні шепочуть рецепти штруделя.", "Mia")
+            53, "Справді тихо. Коні шепочуть рецепти штруделя.", "Mia",
+            "Спільний номер (dorm)", 36, "3 двоярусні ліжка (6 місць)", "Вид у двір", 2, "Спільний санвузол на поверсі",
+            48.1980, 16.3500)
     ];
 
     private static Hotel H(
@@ -105,7 +125,15 @@ public static class HotelSeed
         string[] galleryFiles,
         int reviewCount,
         string reviewQuote,
-        string reviewAuthor) => new()
+        string reviewAuthor,
+        string roomType,
+        int roomSizeM2,
+        string beds,
+        string roomView,
+        int floor,
+        string bathroom,
+        double latitude,
+        double longitude) => new()
     {
         Id = id,
         Name = name,
@@ -122,6 +150,14 @@ public static class HotelSeed
             galleryFiles.Select(f => $"/hotels/{f}").ToArray()),
         ReviewCount = reviewCount,
         ReviewQuote = reviewQuote,
-        ReviewAuthor = reviewAuthor
+        ReviewAuthor = reviewAuthor,
+        RoomType = roomType,
+        RoomSizeM2 = roomSizeM2,
+        Beds = beds,
+        RoomView = roomView,
+        Floor = floor,
+        Bathroom = bathroom,
+        Latitude = latitude,
+        Longitude = longitude
     };
 }

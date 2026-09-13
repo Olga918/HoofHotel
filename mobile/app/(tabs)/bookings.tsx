@@ -65,11 +65,11 @@ export default function BookingsScreen() {
       {
         text: 'Так, скасувати',
         style: 'destructive',
-        onPress: async () => {
+            onPress: async () => {
           setBusyId(b.id);
           try {
             await cancelBooking(user.token, b.id);
-            await load();
+            setList((cur) => cur.filter((x) => x.id !== b.id));
           } catch (e) {
             Alert.alert('Помилка', e instanceof Error ? e.message : 'Не вдалося');
           } finally {
@@ -105,13 +105,15 @@ export default function BookingsScreen() {
     );
   }
 
+  const activeList = list.filter((b) => b.status !== 'Cancelled');
+
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <Text style={[styles.title, { color: colors.text }]}>Мої броні</Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <FlatList
-        data={list}
+        data={activeList}
         keyExtractor={(b) => String(b.id)}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
@@ -123,7 +125,6 @@ export default function BookingsScreen() {
           </Text>
         }
         renderItem={({ item: b }) => {
-          const cancelled = b.status === 'Cancelled';
           return (
             <View
               style={[
@@ -131,20 +132,13 @@ export default function BookingsScreen() {
                 {
                   borderColor: colors.tabIconDefault,
                   backgroundColor: '#fff',
-                  opacity: cancelled ? 0.65 : 1,
                 },
               ]}
             >
               <View style={styles.row}>
                 <Text style={[styles.hotel, { color: colors.text }]}>{b.hotelName}</Text>
-                <RNText
-                  style={{
-                    color: cancelled ? '#c0392b' : '#2e7d32',
-                    fontWeight: '700',
-                    fontSize: 12,
-                  }}
-                >
-                  {cancelled ? 'Скасовано' : 'Підтверджено'}
+                <RNText style={{ color: '#2e7d32', fontWeight: '700', fontSize: 12 }}>
+                  Підтверджено
                 </RNText>
               </View>
               <Text style={[styles.meta, { color: colors.tabIconDefault }]}>
@@ -156,19 +150,17 @@ export default function BookingsScreen() {
               <Text style={[styles.price, { color: colors.tint }]}>
                 {Math.round(Number(b.totalPrice))} грн
               </Text>
-              {!cancelled ? (
-                <Pressable
-                  style={[styles.cancelBtn, { borderColor: colors.tint }]}
-                  disabled={busyId === b.id}
-                  onPress={() => onCancel(b)}
-                >
-                  {busyId === b.id ? (
-                    <ActivityIndicator color={colors.tint} />
-                  ) : (
-                    <RNText style={{ color: colors.tint, fontWeight: '700' }}>Скасувати</RNText>
-                  )}
-                </Pressable>
-              ) : null}
+              <Pressable
+                style={[styles.cancelBtn, { borderColor: colors.tint }]}
+                disabled={busyId === b.id}
+                onPress={() => onCancel(b)}
+              >
+                {busyId === b.id ? (
+                  <ActivityIndicator color={colors.tint} />
+                ) : (
+                  <RNText style={{ color: colors.tint, fontWeight: '700' }}>Скасувати</RNText>
+                )}
+              </Pressable>
             </View>
           );
         }}

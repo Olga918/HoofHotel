@@ -27,5 +27,29 @@ public class Hotel
 
     public string? ReviewAuthor { get; set; }
 
+    /// <summary>Тип номера: Стандарт / Люкс / Апартаменти…</summary>
+    public string RoomType { get; set; } = "Стандартний номер";
+
+    /// <summary>Площа номера в м².</summary>
+    public int RoomSizeM2 { get; set; } = 18;
+
+    /// <summary>Опис ліжок: 1 двоспальне, 2 односпальні…</summary>
+    public string Beds { get; set; } = "1 двоспальне ліжко";
+
+    /// <summary>Вид з вікна.</summary>
+    public string RoomView { get; set; } = "Вид на двір";
+
+    /// <summary>Поверх (0 = не вказано).</summary>
+    public int Floor { get; set; }
+
+    /// <summary>Ванна / душ тощо.</summary>
+    public string Bathroom { get; set; } = "Приватна ванна кімната";
+
+    /// <summary>Широта для карти.</summary>
+    public double Latitude { get; set; }
+
+    /// <summary>Довгота для карти.</summary>
+    public double Longitude { get; set; }
+
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }

@@ -69,7 +69,7 @@ public class BookingsController(AppDbContext db) : ControllerBase
             return Unauthorized(new { message = "Увійди в акаунт" });
 
         var list = await db.Bookings.AsNoTracking()
-            .Where(b => b.UserId == userId)
+            .Where(b => b.UserId == userId && b.Status != BookingStatus.Cancelled)
             .OrderByDescending(b => b.CreatedAt)
             .Select(b => new BookingDto(
                 b.Id,

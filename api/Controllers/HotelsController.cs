@@ -50,7 +50,14 @@ public class HotelsController(AppDbContext db) : ControllerBase
         h.Rating,
         ImageUrl = Abs(h.ImageUrl),
         h.Address,
-        h.MaxGuests
+        h.MaxGuests,
+        Amenities = h.Amenities
+            .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+        h.RoomType,
+        h.RoomSizeM2,
+        h.Beds,
+        h.Latitude,
+        h.Longitude
     };
 
     private object MapDetail(Models.Hotel h)
@@ -76,7 +83,15 @@ public class HotelsController(AppDbContext db) : ControllerBase
             Gallery = gallery.Select(Abs).ToArray(),
             h.ReviewCount,
             h.ReviewQuote,
-            h.ReviewAuthor
+            h.ReviewAuthor,
+            h.RoomType,
+            h.RoomSizeM2,
+            h.Beds,
+            h.RoomView,
+            h.Floor,
+            h.Bathroom,
+            h.Latitude,
+            h.Longitude
         };
     }
 

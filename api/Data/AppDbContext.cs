@@ -29,6 +29,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(x => x.GalleryJson).HasMaxLength(2000);
             e.Property(x => x.ReviewQuote).HasMaxLength(500);
             e.Property(x => x.ReviewAuthor).HasMaxLength(120);
+            e.Property(x => x.RoomType).HasMaxLength(120);
+            e.Property(x => x.Beds).HasMaxLength(200);
+            e.Property(x => x.RoomView).HasMaxLength(160);
+            e.Property(x => x.Bathroom).HasMaxLength(160);
         });
 
         modelBuilder.Entity<Booking>(e =>

@@ -4,14 +4,20 @@ export type SearchParams = {
   toCity: string;
   checkIn: Date;
   checkOut: Date;
-  guests: number;
+  /** Дорослі (мін. 1). */
+  adults: number;
+  /** Діти (0+). */
+  children: number;
 };
 
 type SearchContextValue = SearchParams & {
   setToCity: (v: string) => void;
   setCheckIn: (v: Date) => void;
   setCheckOut: (v: Date) => void;
-  setGuests: (v: number) => void;
+  setAdults: (v: number) => void;
+  setChildren: (v: number) => void;
+  /** Усього людей = дорослі + діти (для місткості номера і ціни). */
+  guests: number;
   nights: number;
 };
 
@@ -33,7 +39,8 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   const [toCity, setToCity] = useState('');
   const [checkIn, setCheckIn] = useState(() => addDays(new Date(), 1));
   const [checkOut, setCheckOut] = useState(() => addDays(new Date(), 3));
-  const [guests, setGuests] = useState(2);
+  const [adults, setAdultsState] = useState(2);
+  const [childrenCount, setChildrenState] = useState(0);
 
   const nights = useMemo(() => {
     const ms = startOfDay(checkOut).getTime() - startOfDay(checkIn).getTime();
@@ -41,11 +48,26 @@ export function SearchProvider({ children }: { children: ReactNode }) {
     return Math.max(1, n);
   }, [checkIn, checkOut]);
 
+  const guests = adults + childrenCount;
+
+  const setAdults = (v: number) => {
+    const next = Math.min(10, Math.max(1, Math.floor(v)));
+    // не більше 12 разом з дітьми
+    setAdultsState(Math.min(next, 12 - childrenCount));
+  };
+
+  const setChildren = (v: number) => {
+    const next = Math.min(8, Math.max(0, Math.floor(v)));
+    setChildrenState(Math.min(next, 12 - adults));
+  };
+
   const value = useMemo(
     () => ({
       toCity,
       checkIn,
       checkOut,
+      adults,
+      children: childrenCount,
       guests,
       setToCity,
       setCheckIn: (v: Date) => {
@@ -57,10 +79,11 @@ export function SearchProvider({ children }: { children: ReactNode }) {
         const next = startOfDay(v);
         setCheckOut(next <= checkIn ? addDays(checkIn, 1) : next);
       },
-      setGuests: (v: number) => setGuests(Math.min(12, Math.max(1, v))),
+      setAdults,
+      setChildren,
       nights,
     }),
-    [toCity, checkIn, checkOut, guests, nights]
+    [toCity, checkIn, checkOut, adults, childrenCount, guests, nights]
   );
 
   return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>;
@@ -79,4 +102,13 @@ export function estimateStayPrice(pricePerNight: number, guests: number, nights:
 
 export function formatUaDate(d: Date) {
   return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' });
+}
+
+export function formatGuestsLabel(adults: number, children: number) {
+  const a =
+    adults === 1 ? '1 дорослий' : adults < 5 ? `${adults} дорослих` : `${adults} дорослих`;
+  if (children <= 0) return a;
+  const c =
+    children === 1 ? '1 дитина' : children < 5 ? `${children} дитини` : `${children} дітей`;
+  return `${a} · ${c}`;
 }

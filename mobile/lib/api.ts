@@ -87,6 +87,12 @@ export type Hotel = {
   imageUrl: string | null;
   address: string;
   maxGuests?: number;
+  amenities?: string[];
+  roomType?: string;
+  roomSizeM2?: number;
+  beds?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type HotelDetail = Hotel & {
@@ -95,6 +101,9 @@ export type HotelDetail = Hotel & {
   reviewCount: number;
   reviewQuote: string | null;
   reviewAuthor: string | null;
+  roomView?: string;
+  floor?: number;
+  bathroom?: string;
 };
 
 /** Absolute URL for hotel images (API wwwroot or external). */
@@ -110,22 +119,60 @@ export async function fetchHotels(city?: string): Promise<Hotel[]> {
   const q = city?.trim() ? `?city=${encodeURIComponent(city.trim())}` : '';
   const res = await fetch(`${API_BASE_URL}/api/hotels${q}`);
   if (!res.ok) throw new Error(await readError(res));
-  const list = (await res.json()) as Hotel[];
-  return list.map((h) => ({
-    ...h,
-    imageUrl: resolveHotelImageUrl(h.imageUrl),
-  }));
+  const list = (await res.json()) as Record<string, unknown>[];
+  return list.map((raw) => {
+    const h = raw as unknown as Hotel;
+    const str = (a: string, b: string) => {
+      const v = raw[a] ?? raw[b];
+      return typeof v === 'string' && v.trim() ? v.trim() : undefined;
+    };
+    const num = (a: string, b: string) => {
+      const v = raw[a] ?? raw[b];
+      return typeof v === 'number' ? v : Number(v) || undefined;
+    };
+    return {
+      ...h,
+      imageUrl: resolveHotelImageUrl(h.imageUrl ?? (raw.ImageUrl as string | null)),
+      amenities: (h.amenities ?? (raw.Amenities as string[]) ?? []) as string[],
+      roomType: str('roomType', 'RoomType') ?? h.roomType,
+      roomSizeM2: num('roomSizeM2', 'RoomSizeM2') ?? h.roomSizeM2,
+      beds: str('beds', 'Beds') ?? h.beds,
+    };
+  });
 }
 
 /** GET /api/hotels/{id} */
 export async function fetchHotelById(id: number): Promise<HotelDetail> {
   const res = await fetch(`${API_BASE_URL}/api/hotels/${id}`);
   if (!res.ok) throw new Error(await readError(res));
-  const h = (await res.json()) as HotelDetail;
+  const raw = (await res.json()) as Record<string, unknown>;
+  const str = (a: string, b?: string) => {
+    const v = raw[a] ?? (b ? raw[b] : undefined);
+    return typeof v === 'string' && v.trim() ? v.trim() : undefined;
+  };
+  const num = (a: string, b?: string) => {
+    const v = raw[a] ?? (b ? raw[b] : undefined);
+    return typeof v === 'number' ? v : Number(v) || undefined;
+  };
+  const h = raw as unknown as HotelDetail;
   return {
     ...h,
-    imageUrl: resolveHotelImageUrl(h.imageUrl),
-    gallery: (h.gallery ?? []).map((u) => resolveHotelImageUrl(u) ?? u),
+    imageUrl: resolveHotelImageUrl(h.imageUrl ?? (raw.ImageUrl as string | null)),
+    gallery: ((h.gallery ?? (raw.Gallery as string[]) ?? []) as string[]).map(
+      (u) => resolveHotelImageUrl(u) ?? u
+    ),
+    amenities: (h.amenities ?? (raw.Amenities as string[]) ?? []) as string[],
+    roomType: str('roomType', 'RoomType') ?? h.roomType,
+    roomSizeM2: num('roomSizeM2', 'RoomSizeM2') ?? h.roomSizeM2,
+    beds: str('beds', 'Beds') ?? h.beds,
+    roomView: str('roomView', 'RoomView') ?? h.roomView,
+    floor: num('floor', 'Floor') ?? h.floor,
+    bathroom: str('bathroom', 'Bathroom') ?? h.bathroom,
+    latitude: num('latitude', 'Latitude') ?? h.latitude,
+    longitude: num('longitude', 'Longitude') ?? h.longitude,
+    reviewCount: num('reviewCount', 'ReviewCount') ?? h.reviewCount ?? 0,
+    reviewQuote: str('reviewQuote', 'ReviewQuote') ?? h.reviewQuote ?? null,
+    reviewAuthor: str('reviewAuthor', 'ReviewAuthor') ?? h.reviewAuthor ?? null,
   };
 }
 

@@ -59,6 +59,14 @@ using (var scope = app.Services.CreateScope())
         ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "ReviewCount" integer NOT NULL DEFAULT 0;
         ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "ReviewQuote" character varying(500) NULL;
         ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "ReviewAuthor" character varying(120) NULL;
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "RoomType" character varying(120) NOT NULL DEFAULT 'Стандартний номер';
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "RoomSizeM2" integer NOT NULL DEFAULT 18;
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "Beds" character varying(200) NOT NULL DEFAULT '1 двоспальне ліжко';
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "RoomView" character varying(160) NOT NULL DEFAULT 'Вид на двір';
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "Floor" integer NOT NULL DEFAULT 0;
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "Bathroom" character varying(160) NOT NULL DEFAULT 'Приватна ванна кімната';
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "Latitude" double precision NOT NULL DEFAULT 0;
+        ALTER TABLE "Hotels" ADD COLUMN IF NOT EXISTS "Longitude" double precision NOT NULL DEFAULT 0;
         """);
 
     foreach (var item in HotelSeed.Items)
@@ -84,6 +92,14 @@ using (var scope = app.Services.CreateScope())
         row.ReviewCount = item.ReviewCount;
         row.ReviewQuote = item.ReviewQuote;
         row.ReviewAuthor = item.ReviewAuthor;
+        row.RoomType = item.RoomType;
+        row.RoomSizeM2 = item.RoomSizeM2;
+        row.Beds = item.Beds;
+        row.RoomView = item.RoomView;
+        row.Floor = item.Floor;
+        row.Bathroom = item.Bathroom;
+        row.Latitude = item.Latitude;
+        row.Longitude = item.Longitude;
     }
 
     db.SaveChanges();
