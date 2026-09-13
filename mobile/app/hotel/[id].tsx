@@ -133,7 +133,7 @@ export default function HotelDetailScreen() {
             </RNText>
           </View>
         ) : (
-          <View style={[styles.photoFallback, { backgroundColor: '#e8ddd2' }]}>
+          <View style={[styles.photoFallback, { backgroundColor: '#EDE9FE' }]}>
             <RNText style={{ fontSize: 48 }}>🐴</RNText>
           </View>
         )}
@@ -219,15 +219,15 @@ export default function HotelDetailScreen() {
           </View>
 
           <View style={[styles.chipRow]}>
-            <View style={[styles.infoChip, { backgroundColor: '#e8ddd2' }]}>
+            <View style={[styles.infoChip, { backgroundColor: '#EDE9FE' }]}>
               <RNText style={styles.infoChipText}>👥 до {hotel.maxGuests ?? 2} гостей</RNText>
             </View>
             {hotel.roomSizeM2 ? (
-              <View style={[styles.infoChip, { backgroundColor: '#e8ddd2' }]}>
+              <View style={[styles.infoChip, { backgroundColor: '#EDE9FE' }]}>
                 <RNText style={styles.infoChipText}>📐 {hotel.roomSizeM2} м²</RNText>
               </View>
             ) : null}
-            <View style={[styles.infoChip, { backgroundColor: '#e8ddd2' }]}>
+            <View style={[styles.infoChip, { backgroundColor: '#EDE9FE' }]}>
               <RNText style={styles.infoChipText}>
                 💰 {Math.round(hotel.pricePerNight)} грн / ніч / особа
               </RNText>
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   },
   actionBtnText: { fontWeight: '800', fontSize: 13 },
   infoChip: { borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8 },
-  infoChipText: { fontWeight: '700', color: '#2b1d14', fontSize: 13 },
+  infoChipText: { fontWeight: '700', color: '#2D1B4E', fontSize: 13 },
   amenities: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   amenity: {
     borderWidth: 1,
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   roomGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   roomCell: { width: '30%', minWidth: 90 },
   roomCellWide: { width: '100%' },
-  roomLabel: { fontSize: 11, fontWeight: '700', color: '#a89080', marginBottom: 2 },
+  roomLabel: { fontSize: 11, fontWeight: '700', color: '#9B8EC4', marginBottom: 2 },
   roomValue: { fontSize: 14, fontWeight: '600', lineHeight: 20 },
   bookBtn: {
     marginTop: 22,

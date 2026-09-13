@@ -56,6 +56,8 @@ public class HotelsController(AppDbContext db) : ControllerBase
         h.RoomType,
         h.RoomSizeM2,
         h.Beds,
+        h.RoomView,
+        h.Bathroom,
         h.Latitude,
         h.Longitude
     };

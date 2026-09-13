@@ -91,6 +91,8 @@ export type Hotel = {
   roomType?: string;
   roomSizeM2?: number;
   beds?: string;
+  roomView?: string;
+  bathroom?: string;
   latitude?: number;
   longitude?: number;
 };
@@ -137,6 +139,8 @@ export async function fetchHotels(city?: string): Promise<Hotel[]> {
       roomType: str('roomType', 'RoomType') ?? h.roomType,
       roomSizeM2: num('roomSizeM2', 'RoomSizeM2') ?? h.roomSizeM2,
       beds: str('beds', 'Beds') ?? h.beds,
+      roomView: str('roomView', 'RoomView'),
+      bathroom: str('bathroom', 'Bathroom'),
     };
   });
 }
