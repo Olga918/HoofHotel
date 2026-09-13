@@ -13,7 +13,7 @@
     "android": {
       "package": "com.olga918.hoofhotel",
       "adaptiveIcon": {
-        "backgroundColor": "#3d2b1f",
+        "backgroundColor": "#e8ddf5",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -33,7 +33,7 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#3d2b1f"
+          "backgroundColor": "#ffffff"
         }
       ],
       "@react-native-community/datetimepicker"
